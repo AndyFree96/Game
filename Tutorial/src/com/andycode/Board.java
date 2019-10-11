@@ -2,19 +2,18 @@ package com.andycode;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Timer;
-import java.util.TimerTask;
 
-public class Board extends JPanel{
+public class Board extends JPanel
+        implements Runnable {
+
     private final int B_WIDTH = 350;
     private final int B_HEIGHT = 350;
     private final int INITIAL_X = -40;
     private final int INITIAL_Y = -40;
-    private final int INITIAL_DELAY = 100;
-    private final int PERIOD_INTERVAL = 25;
+    private final int DELAY = 25;
 
     private Image star;
-    private Timer timer;
+    private Thread animator;
     private int x, y;
 
     public Board() {
@@ -29,14 +28,19 @@ public class Board extends JPanel{
         x = INITIAL_X;
         y = INITIAL_Y;
 
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new ScheduleTask(),
-                INITIAL_DELAY, PERIOD_INTERVAL);
     }
 
     private void loadImage() {
         ImageIcon imageIcon = new ImageIcon("src/resources/star.png");
         star = imageIcon.getImage();
+    }
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+
+        animator = new Thread(this);
+        animator.start();
     }
 
     @Override
@@ -50,19 +54,40 @@ public class Board extends JPanel{
         Toolkit.getDefaultToolkit().sync();
     }
 
-    private class ScheduleTask extends TimerTask {
-        @Override
-        public void run() {
-            x += 1;
-            y += 1;
+    private void cycle() {
+        x += 1;
+        y += 1;
 
-            if (y > B_HEIGHT) {
-                x = INITIAL_X;
-                y = INITIAL_Y;
-            }
-
-            repaint();
+        if (y > B_HEIGHT) {
+            x = INITIAL_X;
+            y = INITIAL_Y;
         }
     }
 
+    @Override
+    public void run() {
+        long beforeTime, timeDiff, sleep;
+        beforeTime = System.currentTimeMillis();
+
+        while (true) {
+            cycle();
+            repaint();
+
+            timeDiff = System.currentTimeMillis() - beforeTime;
+            sleep = DELAY - timeDiff;
+
+            if (sleep < 0) {
+                sleep = 2;
+            }
+
+            try {
+                Thread.sleep(sleep);
+            } catch (InterruptedException ex) {
+                String msg = String.format("Thread interrupted: %s", ex.getMessage());
+                JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            beforeTime = System.currentTimeMillis();
+        }
+    }
 }
