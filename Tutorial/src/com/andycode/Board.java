@@ -7,10 +7,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Timer;
+import java.util.List;
 
 public class Board extends JPanel implements ActionListener {
     private Timer timer;
     private SpaceShip spaceShip;
+    private final int ICRAFT_X = 40;
+    private final int ICRAFT_Y = 60;
     private final int DELAY = 10;
 
     public Board() {
@@ -22,7 +25,7 @@ public class Board extends JPanel implements ActionListener {
         setBackground(Color.BLACK);
         setFocusable(true);
 
-        spaceShip = new SpaceShip();
+        spaceShip = new SpaceShip(ICRAFT_X, ICRAFT_Y);
 
         timer = new Timer(DELAY, this);
         timer.start();
@@ -32,6 +35,7 @@ public class Board extends JPanel implements ActionListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         doDrawing(g);
+        Toolkit.getDefaultToolkit().sync();
     }
 
     private void doDrawing(Graphics graphics) {
@@ -39,19 +43,34 @@ public class Board extends JPanel implements ActionListener {
 
         graphics2D.drawImage(spaceShip.getImage(), spaceShip.getX(),
                 spaceShip.getY(), this);
-
+        List<Missile> missileList = spaceShip.getMissileList();
+        for (Missile missile : missileList) {
+            graphics2D.drawImage(missile.getImage(), missile.getX(),
+                    missile.getY(), this);
+        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        step();
+        updateMissiles();
+        updateSpaceShip();
+        repaint();
     }
 
-    private void step() {
-        spaceShip.move();
+    private void updateMissiles() {
+        List<Missile> missiles = spaceShip.getMissileList();
+        for (int i = 0; i < missiles.size(); i++) {
+            Missile missile = missiles.get(i);
+            if (missile.isVisible()) {
+                missile.move();
+            } else {
+                missiles.remove(i);
+            }
+        }
+    }
 
-        repaint(spaceShip.getX() - 1, spaceShip.getY() - 1,
-                spaceShip.getWidth() + 2, spaceShip.getHeight() + 2);
+    private void updateSpaceShip() {
+        spaceShip.move();
     }
 
     private class TAdapter extends KeyAdapter {
