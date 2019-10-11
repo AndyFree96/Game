@@ -13,10 +13,10 @@ public class SpaceShip extends Sprite{
 
     public SpaceShip(int x, int y) {
         super(x, y);
-        initSpaceShip();
+        initCraft();
     }
 
-    private void initSpaceShip() {
+    private void initCraft() {
         missileList = new ArrayList<>();
 
         loadImage("src/resources/spaceship.png");
@@ -26,6 +26,14 @@ public class SpaceShip extends Sprite{
     public void move() {
         x += dx;
         y += dy;
+
+        if (x < 1) {
+            x = 1;
+        }
+
+        if (y < 1) {
+            y = 1;
+        }
     }
 
     public List<Missile> getMissileList() {
@@ -41,19 +49,19 @@ public class SpaceShip extends Sprite{
         }
 
         if (key == KeyEvent.VK_LEFT) {
-            dx = -2;
+            dx = -1;
         }
 
         if (key == KeyEvent.VK_RIGHT) {
-            dx = 2;
+            dx = 1;
         }
 
         if (key == KeyEvent.VK_UP) {
-            dy = -2;
+            dy = -1;
         }
 
         if (key == KeyEvent.VK_DOWN) {
-            dy = 2;
+            dy = 1;
         }
     }
 
