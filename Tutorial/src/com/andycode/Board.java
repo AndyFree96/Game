@@ -2,15 +2,16 @@ package com.andycode;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class Board extends JPanel implements ActionListener {
+public class Board extends JPanel{
     private final int B_WIDTH = 350;
     private final int B_HEIGHT = 350;
     private final int INITIAL_X = -40;
     private final int INITIAL_Y = -40;
-    private final int DELAY = 25;
+    private final int INITIAL_DELAY = 100;
+    private final int PERIOD_INTERVAL = 25;
 
     private Image star;
     private Timer timer;
@@ -28,8 +29,9 @@ public class Board extends JPanel implements ActionListener {
         x = INITIAL_X;
         y = INITIAL_Y;
 
-        timer = new Timer(DELAY, this);
-        timer.start();
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new ScheduleTask(),
+                INITIAL_DELAY, PERIOD_INTERVAL);
     }
 
     private void loadImage() {
@@ -48,16 +50,19 @@ public class Board extends JPanel implements ActionListener {
         Toolkit.getDefaultToolkit().sync();
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        x += 1;
-        y += 1;
+    private class ScheduleTask extends TimerTask {
+        @Override
+        public void run() {
+            x += 1;
+            y += 1;
 
-        if (y > B_HEIGHT) {
-            x = INITIAL_X;
-            y = INITIAL_Y;
+            if (y > B_HEIGHT) {
+                x = INITIAL_X;
+                y = INITIAL_Y;
+            }
+
+            repaint();
         }
-
-        repaint();
     }
+
 }
