@@ -8,6 +8,12 @@ Tutorial: http://zetcode.com/tutorials/javagamestutorial/puzzle/
 
 ![](Images/1.png)
 
+## [Snake](Snake)
+
+Tutorial: http://zetcode.com/tutorials/javagamestutorial/snake/
+
+![](Images/2.png)
+
 ## 补充
 
 项目持续更新，欢迎您[Star本项目](https://github.com/AndyFree96/Game)
